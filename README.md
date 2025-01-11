@@ -15,7 +15,7 @@ baseUrl 將由面試官提供。
 ## BFormControls.vue 要求
 
 1. 能使用 v-model 做雙向綁定 (使用 vue3.4 以下方法可加分)
-2. type參數: 類型String, 預設為text
+2. type 參數: 類型 String, 預設為 text
 3. id 不可重複，但允許用戶自行設置
 
 ## 注意事項
@@ -25,3 +25,5 @@ baseUrl 將由面試官提供。
 ## 額外內容
 
 1. 請將您的專案透過自動化構建方式部屬 如(cloudflare pages、github pages、netlify、vercel 等)
+
+### 測試
