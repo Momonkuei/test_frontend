@@ -83,13 +83,7 @@ interface User {
 }
 
 const baseUrl = 'https://ijk7bd8l.wuc.us.kg/swagger/index.html'; // 由面試官提供
-const users = ref<User[]>([
-	{
-		id: 1,
-		name: 'Kuei',
-		age: 34,
-	},
-]);
+const users = ref<User[]>([]);
 const formDate = ref({
 	// id readonly
 	id: 0,
@@ -106,12 +100,12 @@ const create = () => {
 
 	if (fieldsRules) {
 		console.log('名字或是年齡未填');
+		alert('名字或是年齡未填');
 		return;
 	} else {
-		// 生成唯一的 ID
-		do {
-			formDate.value.id = Math.floor(Math.random() * 1000000);
-		} while (users.value.some(user => user.id === formDate.value.id));
+		// users 最後一個id 號碼再加1做為新增用戶id
+		formDate.value.id =
+			parseInt(users.value[users.value.length - 1].id) + 1;
 
 		users.value.push({ ...formDate.value });
 
@@ -141,6 +135,7 @@ const edit = () => {
 	// 需有確認步驟
 	if (fieldsRules) {
 		console.log('名字或是年齡未填');
+		alert('名字或是年齡未填');
 		return;
 	} else {
 		updateUser();
@@ -194,7 +189,7 @@ const getUsers = () => {
 	})
 		.then(res => {
 			users.value = res.data;
-			// console.log(users.value);
+			console.log(users.value);
 		})
 		.catch(err => {
 			console.log(err);
