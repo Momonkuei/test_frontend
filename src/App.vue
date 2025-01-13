@@ -8,6 +8,8 @@
 						class="mb-3"
 						label="名字"
 						v-model="formDate.name"
+						placeholderTxt="請輸入名子"
+						inputType="text"
 					/>
 
 					<BFormControls
@@ -15,6 +17,8 @@
 						label="年齡"
 						type="number"
 						v-model="formDate.age"
+						placeholderTxt="請輸入年齡"
+						inputType="number"
 					/>
 
 					<div class="d-flex gap-1">
@@ -79,7 +83,13 @@ interface User {
 }
 
 const baseUrl = 'https://ijk7bd8l.wuc.us.kg/swagger/index.html'; // 由面試官提供
-const users = ref<User[]>([]);
+const users = ref<User[]>([
+	{
+		id: 1,
+		name: 'Kuei',
+		age: 34,
+	},
+]);
 const formDate = ref({
 	// id readonly
 	id: 0,
@@ -87,18 +97,31 @@ const formDate = ref({
 	age: 0,
 });
 
+//欄位規則
+const fieldsRules =
+	formDate.value.name.replace(/\s/g, '') === '' && formDate.value.age < 0;
+
 const create = () => {
 	// 需有確認步驟
-	if (
-		formDate.value.name.replace(/\s/g, '') === '' ||
-		formDate.value.age.replace(/\s/g, '') === ''
-	) {
+
+	if (fieldsRules) {
 		console.log('名字或是年齡未填');
+		return;
 	} else {
+		// 生成唯一的 ID
+		do {
+			formDate.value.id = Math.floor(Math.random() * 1000000);
+		} while (users.value.some(user => user.id === formDate.value.id));
+
+		users.value.push({ ...formDate.value });
+
 		axios
 			.post('http://localhost:3000/user', formDate.value)
 			.then(function (res) {
 				console.log(res);
+				getUsers();
+				formDate.value.name = '';
+				formDate.value.age = 0;
 			})
 			.catch(function (err) {
 				console.log(err);
@@ -106,16 +129,61 @@ const create = () => {
 	}
 };
 
+// 更新資訊
+const updateUser = () => {
+	const index = users.value.findIndex(u => u.id === formDate.value.id);
+	if (index !== -1) {
+		users.value[index] = { ...formDate.value }; // 使用淺拷貝更新數據
+	}
+};
+
 const edit = () => {
 	// 需有確認步驟
+	if (fieldsRules) {
+		console.log('名字或是年齡未填');
+		return;
+	} else {
+		updateUser();
+
+		axios
+			.patch(`http://localhost:3000/user/${formDate.value.id}`, {
+				name: formDate.value.name,
+				age: formDate.value.age,
+			})
+			.then(function (res) {
+				console.log('修改成功');
+				getUsers();
+				formDate.value.name = '';
+				formDate.value.age = 0;
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
 };
 
 const selectUser = (user: User) => {
 	// 禁止使用 formDate.value = user
+	formDate.value = { ...user };
+	console.log(formDate.value);
 };
 
 const remove = (user: User) => {
 	// 需有確認步驟
+	let checkedRemove = confirm(`確認刪除${user.name}的資料嗎?`);
+	if (!checkedRemove) {
+		return;
+	} else {
+		axios
+			.delete(`http://localhost:3000/user/${user.id}`)
+			.then(res => {
+				console.log(res.data);
+				getUsers();
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
 };
 
 const getUsers = () => {
@@ -125,8 +193,8 @@ const getUsers = () => {
 		url: 'http://localhost:3000/user',
 	})
 		.then(res => {
-			const { data } = res.data;
-			users.value = data;
+			users.value = res.data;
+			// console.log(users.value);
 		})
 		.catch(err => {
 			console.log(err);
