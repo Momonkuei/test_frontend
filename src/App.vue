@@ -104,8 +104,9 @@ const create = () => {
 		return;
 	} else {
 		// users 最後一個id 號碼再加1做為新增用戶id
-		formDate.value.id =
-			parseInt(users.value[users.value.length - 1].id) + 1;
+		formDate.value.id = (
+			parseInt(users.value[users.value.length - 1].id) + 1
+		).toString();
 
 		users.value.push({ ...formDate.value });
 
@@ -113,7 +114,7 @@ const create = () => {
 			.post('http://localhost:3000/user', formDate.value)
 			.then(function (res) {
 				console.log(res);
-				getUsers();
+
 				formDate.value.name = '';
 				formDate.value.age = 0;
 			})
@@ -145,13 +146,13 @@ const edit = () => {
 				name: formDate.value.name,
 				age: formDate.value.age,
 			})
-			.then(function (res) {
+			.then(res => {
 				console.log('修改成功');
-				getUsers();
+
 				formDate.value.name = '';
 				formDate.value.age = 0;
 			})
-			.catch(function (err) {
+			.catch(err => {
 				console.log(err);
 			});
 	}
@@ -160,7 +161,7 @@ const edit = () => {
 const selectUser = (user: User) => {
 	// 禁止使用 formDate.value = user
 	formDate.value = { ...user };
-	console.log(formDate.value);
+	// console.log(formDate.value);
 };
 
 const remove = (user: User) => {
@@ -173,7 +174,9 @@ const remove = (user: User) => {
 			.delete(`http://localhost:3000/user/${user.id}`)
 			.then(res => {
 				console.log(res.data);
-				getUsers();
+				users.value = users.value.filter(
+					dataUser => dataUser.id !== user.id
+				);
 			})
 			.catch(function (err) {
 				console.log(err);
