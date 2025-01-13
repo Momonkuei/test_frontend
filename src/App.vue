@@ -82,7 +82,7 @@ interface User {
 	age: number;
 }
 
-const baseUrl = 'https://ijk7bd8l.wuc.us.kg/swagger/index.html'; // 由面試官提供
+const baseUrl = 'https://ijk7bd8l.wuc.us.kg'; // 由面試官提供
 const users = ref<User[]>([]);
 const formDate = ref({
 	// id readonly
@@ -187,12 +187,12 @@ const remove = (user: User) => {
 const getUsers = () => {
 	axios({
 		method: 'get',
-		// url: baseUrl + '/api/user',
-		url: 'http://localhost:3000/user',
+		url: baseUrl + '/api/user',
 	})
 		.then(res => {
-			users.value = res.data;
-			console.log(users.value);
+			console.log('data', res.data.data);
+			users.value = res.data.data;
+			// console.log(users.value);
 		})
 		.catch(err => {
 			console.log(err);
