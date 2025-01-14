@@ -104,17 +104,24 @@ const create = () => {
 		return;
 	} else {
 		// users 最後一個id 號碼再加1做為新增用戶id
-		formDate.value.id = (
-			parseInt(users.value[users.value.length - 1].id) + 1
-		).toString();
+		// formDate.value.id = (
+		// 	parseInt(users.value[users.value.length - 1].id) + 1
+		// ).toString();
 
-		users.value.push({ ...formDate.value });
+		// 因為id 不是自己添加，只好請求了
+		// users.value.push({ ...formDate.value });
 
-		axios
-			.post('http://localhost:3000/user', formDate.value)
+		axios({
+			method: 'post',
+			url: baseUrl + '/api/user',
+			data: {
+				age: formDate.value.age,
+				name: formDate.value.name,
+			},
+		})
 			.then(function (res) {
 				console.log(res);
-
+				getUsers();
 				formDate.value.name = '';
 				formDate.value.age = 0;
 			})
@@ -141,11 +148,13 @@ const edit = () => {
 	} else {
 		updateUser();
 
-		axios
-			.patch(`http://localhost:3000/user/${formDate.value.id}`, {
-				name: formDate.value.name,
-				age: formDate.value.age,
-			})
+		// console.log(formDate.value);
+
+		axios({
+			method: 'put',
+			url: baseUrl + '/api/user',
+			data: formDate.value,
+		})
 			.then(res => {
 				console.log('修改成功');
 
@@ -170,8 +179,13 @@ const remove = (user: User) => {
 	if (!checkedRemove) {
 		return;
 	} else {
-		axios
-			.delete(`http://localhost:3000/user/${user.id}`)
+		axios({
+			method: 'delete',
+			url: baseUrl + '/api/user',
+			data: {
+				id: user.id,
+			},
+		})
 			.then(res => {
 				console.log(res.data);
 				users.value = users.value.filter(
