@@ -155,9 +155,9 @@ const edit = () => {
 			url: baseUrl + '/api/user',
 			data: formDate.value,
 		})
-			.then(res => {
+			.then(() => {
 				console.log('修改成功');
-				console.log(res.data.message);
+
 				formDate.value.name = '';
 				formDate.value.age = 0;
 			})
