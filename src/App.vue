@@ -35,7 +35,8 @@
 
 		<div class="col-12 col-md-6 p-3">
 			<div class="border rounded p-3">
-				<table class="table">
+				<div class="spin" v-if="!users.length || isLoading"></div>
+				<table class="table" v-else>
 					<thead>
 						<tr>
 							<th scope="col">#</th>
@@ -91,6 +92,8 @@ const formDate = ref({
 	age: 0,
 });
 
+const isLoading = ref(false);
+
 //欄位規則
 const fieldsRules =
 	formDate.value.name.replace(/\s/g, '') === '' && formDate.value.age < 0;
@@ -111,6 +114,8 @@ const create = () => {
 		// 因為id 不是自己添加，只好請求了
 		// users.value.push({ ...formDate.value });
 
+		isLoading.value = true;
+
 		axios({
 			method: 'post',
 			url: baseUrl + '/api/user',
@@ -121,6 +126,7 @@ const create = () => {
 		})
 			.then(function (res) {
 				console.log(res);
+				isLoading.value = false;
 				getUsers();
 				formDate.value.name = '';
 				formDate.value.age = 0;
@@ -149,6 +155,7 @@ const edit = () => {
 		updateUser();
 
 		// console.log(formDate.value);
+		isLoading.value = true;
 
 		axios({
 			method: 'put',
@@ -157,6 +164,7 @@ const edit = () => {
 		})
 			.then(() => {
 				console.log('修改成功');
+				isLoading.value = false;
 
 				formDate.value.name = '';
 				formDate.value.age = 0;
@@ -179,6 +187,7 @@ const remove = (user: User) => {
 	if (!checkedRemove) {
 		return;
 	} else {
+		isLoading.value = true;
 		axios({
 			method: 'delete',
 			url: baseUrl + '/api/user',
@@ -187,6 +196,7 @@ const remove = (user: User) => {
 			},
 		})
 			.then(res => {
+				isLoading.value = false;
 				console.log(res.data);
 				users.value = users.value.filter(
 					dataUser => dataUser.id !== user.id
@@ -220,4 +230,21 @@ const setupPage = () => {
 onMounted(setupPage);
 </script>
 
-<style scoped></style>
+<style scoped>
+.spin {
+	display: block;
+	width: 40px;
+	height: 40px;
+	margin: 30px auto;
+	border: 3px solid transparent;
+	border-radius: 50%;
+	border-top-color: #ff8800;
+	animation: spin 1s ease infinite;
+}
+
+@keyframes spin {
+	to {
+		-webkit-transform: rotateZ(360deg);
+	}
+}
+</style>
