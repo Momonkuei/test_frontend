@@ -154,24 +154,30 @@ const edit = () => {
 	} else {
 		updateUser();
 
-		// console.log(formDate.value);
-		isLoading.value = true;
+		let checkedEdit = confirm(`確認修改${formDate.value.name}的資料嗎?`);
 
-		axios({
-			method: 'put',
-			url: baseUrl + '/api/user',
-			data: formDate.value,
-		})
-			.then(() => {
-				console.log('修改成功');
-				isLoading.value = false;
+		if (!checkedEdit) {
+			return;
+		} else {
+			// console.log(formDate.value);
+			isLoading.value = true;
 
-				formDate.value.name = '';
-				formDate.value.age = 0;
+			axios({
+				method: 'put',
+				url: baseUrl + '/api/user',
+				data: formDate.value,
 			})
-			.catch(err => {
-				console.log(err);
-			});
+				.then(() => {
+					console.log('修改成功');
+					isLoading.value = false;
+
+					formDate.value.name = '';
+					formDate.value.age = 0;
+				})
+				.catch(err => {
+					console.log(err);
+				});
+		}
 	}
 };
 
