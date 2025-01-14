@@ -157,7 +157,7 @@ const edit = () => {
 		})
 			.then(res => {
 				console.log('修改成功');
-
+				console.log(res);
 				formDate.value.name = '';
 				formDate.value.age = 0;
 			})
