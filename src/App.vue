@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import BFormControls from './components/BFormControls.vue';
 
 interface User {
@@ -93,15 +93,14 @@ const formDate = ref({
 });
 
 const isLoading = ref(false);
-
-//欄位規則
-const fieldsRules =
-	formDate.value.name.replace(/\s/g, '') === '' && formDate.value.age < 0;
+const nameIsEmpty = computed(() => formDate.value.name.trim() === '');
+const ageIsInvalid = computed(() => Number(formDate.value.age) <= 0);
+const fieldsRules = computed(() => nameIsEmpty.value || ageIsInvalid.value);
 
 const create = () => {
 	// 需有確認步驟
 
-	if (fieldsRules) {
+	if (fieldsRules.value) {
 		console.log('名字或是年齡未填');
 		alert('名字或是年齡未填');
 		return;
@@ -147,7 +146,8 @@ const updateUser = () => {
 
 const edit = () => {
 	// 需有確認步驟
-	if (fieldsRules) {
+
+	if (fieldsRules.value) {
 		console.log('名字或是年齡未填');
 		alert('名字或是年齡未填');
 		return;
@@ -214,9 +214,7 @@ const getUsers = () => {
 		url: baseUrl + '/api/user',
 	})
 		.then(res => {
-			console.log('data', res.data.data);
 			users.value = res.data.data;
-			// console.log(users.value);
 		})
 		.catch(err => {
 			console.log(err);
